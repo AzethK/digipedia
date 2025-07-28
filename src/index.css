@@ -1,0 +1,152 @@
+/* Background for entire app */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #121212;
+  font-family: 'Segoe UI', sans-serif;
+  color: #e0e0e0; /* soft white */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+header,
+.digi-input-container {
+  text-align: center;
+  margin: 24px 0;
+}
+
+
+/* Grid layout */
+.digimon-grid {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  padding: 40px 8px 8px 8px; /* 👈 add space at the top */
+  position: relative;
+  box-sizing: border-box;
+  scroll-padding-top: 40px;
+}
+
+
+
+/* Digimon button */
+.digimon-button {
+  position: relative;
+  height: 120px;
+  width: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff; /* White background */
+  border: 1px solid #ccc; /* Light gray border */
+  border-radius: 10px;
+  cursor: pointer;
+  box-sizing: border-box;
+  overflow: visible;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  z-index: 1;
+}
+
+.digimon-button:hover {
+  background-color: #fff; /* Slightly lighter on hover */
+  transform: scale(1.02);
+}
+
+/* Placeholder inside the button */
+.digimon-placeholder {
+  width: 40px;
+  height: 40px;
+  background-color: #444;
+  border-radius: 50%;
+}
+
+/* Hover popup */
+.digimon-popup {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background-color: #333;
+  color: #f5f5f5;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+  white-space: normal;    /* Allow wrapping */
+  min-width: 120px;
+  word-wrap: normal;  /* Break long words if needed */
+  text-align: center;     /* Center text nicely */
+}
+
+.digimon-button:hover .digimon-popup {
+  opacity: 1;
+}
+
+.loading-container {
+  height: 100vh; /* full viewport height */
+  display: flex;
+  justify-content: center; /* horizontal center */
+  align-items: center;     /* vertical center */
+  background-color: #121212; /* match app background */
+  color: #e0e0e0;           /* soft white text */
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.digimon-image {
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+  pointer-events: none; /* So clicking the button still works */
+}
+
+.digi-input-container {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.digi-input {
+  padding: 10px 16px;
+  font-size: 1rem;
+  width: 250px;
+  border-radius: 8px;
+  border: 1px solid #888;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+.digi-input::placeholder {
+  color: #aaa;
+}
+
+/* Grid wrapper with fixed height and visible borders */
+.digimon-grid-wrapper {
+  max-width: 800px;
+  height: 70vh;
+  margin: 24px auto;
+  padding: 8px;
+  border: 2px solid #2a2a2a;
+  border-radius: 12px;
+  background-color: #1a1a1a;
+  position: relative; /* needed to allow child overflow */
+  overflow: hidden;
+}
+
+
+/* Optional: Custom scrollbar for grid content */
+.digimon-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.digimon-grid::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 4px;
+}
