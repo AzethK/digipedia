@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const TOTAL_DIGIMON = 50;
+const TOTAL_DIGIMON = 200;
 
 const DigiList = (props) => {
   const { searchTerm } = props;
   const [loading, setLoading] = useState(true);
   const [digimons, setDigimons] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDigimons = async () => {
@@ -50,26 +52,27 @@ const DigiList = (props) => {
       </div>
     );
 
-  const filteredDigimons = digimons.filter((digi) => {
-    const term = searchTerm.toLowerCase().trim();
-
-    return (
-      digi.name.toLowerCase().includes(term) ||
-      digi.id.toString().includes(term)
-    );
-  });
+  const filteredDigimons = digimons
+    .filter(
+      (d) =>
+        d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        d.id.toString() === searchTerm.trim()
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <>
       <div className="digimon-grid">
         {filteredDigimons.map((digi) => (
-          <button key={digi.id} className="digimon-button">
+          <button
+            key={digi.id}
+            className="digimon-button"
+            onClick={() => navigate(`/digimon/${digi.id}`)}
+          >
             {digi.image && (
               <img src={digi.image} alt={digi.name} className="digimon-image" />
             )}
-            <div className="digimon-popup">
-              #{digi.id} — {digi.name}
-            </div>
+            <div className="digimon-popup">{digi.name}</div>
           </button>
         ))}
       </div>
