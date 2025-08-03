@@ -1,4 +1,3 @@
-// DigimonModal.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -6,11 +5,13 @@ const DigimonModal = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [digimon, setDigimon] = useState(null);
-  const [showEvolutions, setShowEvolutions] = useState(false);
+  const [showPriorEvolutions, setShowPriorEvolutions] = useState(false);
+  const [showNextEvolutions, setShowNextEvolutions] = useState(false);
 
   useEffect(() => {
     const loadDigimon = async () => {
       const key = `digimon-${id}`;
+
       const cached = localStorage.getItem(key);
 
       let digimon = cached ? JSON.parse(cached) : null;
@@ -29,6 +30,11 @@ const DigimonModal = () => {
       if (!hasFullDetails) {
         try {
           const res = await fetch(`https://digi-api.com/api/v1/digimon/${id}`);
+          if (!res.ok) {
+            // If response status is not OK (like 404), throw an error
+            navigate("/");
+            throw new Error("Digimon not found");
+          }
           const data = await res.json();
 
           const fullDigimon = {
@@ -69,23 +75,66 @@ const DigimonModal = () => {
 
   return (
     <div className="modal-overlay" onClick={closeModal}>
-      {showEvolutions && (
-        <div className="evolution-panel">
-          <h3>Prior Evolutions</h3>
-          <ul>
-            {digimon.priorEvolutions.map((evo, index) => (
-              <li key={index}>{evo.digimon}</li>
-            ))}
-          </ul>
-        </div>
-      )}
       <div className="modal-container">
+        {showPriorEvolutions && (
+          <div
+            className="evolution-panel left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Prior Evolutions</h3>
+            <ul>
+              {digimon.priorEvolutions?.length > 0 ? (
+                digimon.priorEvolutions.map((evo) => (
+                  <button
+                    key={evo.id}
+                    onClick={() => navigate(`/digimon/${evo.id}`)}
+                    className="evolution-icon-button"
+                    title={evo.name}
+                  >
+                    <img src={evo.image} alt={evo.name} />
+                  </button>
+                ))
+              ) : (
+                <p style={{ color: "#aaa" }}>No prior evolutions</p>
+              )}
+            </ul>
+          </div>
+        )}
+        {showNextEvolutions && (
+          <div
+            className="evolution-panel right"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Next Evolutions</h3>
+            {digimon.nextEvolutions?.length > 0 ? (
+              digimon.nextEvolutions.map((evo) => (
+                <button
+                  key={evo.id}
+                  onClick={() => navigate(`/digimon/${evo.id}`)}
+                  className="evolution-icon-button"
+                  title={evo.name}
+                >
+                  <img src={evo.image} alt={evo.name} />
+                </button>
+              ))
+            ) : (
+              <p style={{ color: "#aaa" }}>No next evolutions</p>
+            )}
+          </div>
+        )}
+
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <button
-            className="evolution-toggle"
-            onClick={() => setShowEvolutions(!showEvolutions)}
+            className="prior-evolution-toggle"
+            onClick={() => setShowPriorEvolutions(!showPriorEvolutions)}
           >
-            {showEvolutions ? "\u25B6" : "\u25C0"}
+            {showPriorEvolutions ? "\u25B6" : "\u25C0"}
+          </button>
+          <button
+            className="next-evolution-toggle"
+            onClick={() => setShowNextEvolutions((prev) => !prev)}
+          >
+            {showNextEvolutions ? "\u25C0" : "\u25B6"}
           </button>
           <span className="close-x" onClick={closeModal}>
             ×

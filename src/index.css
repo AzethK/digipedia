@@ -38,7 +38,7 @@ header,
 
 /* Grid layout */
 .digimon-grid {
-  height: 100%;
+  height: 100vh; 
   overflow-y: auto;
   overflow-x: hidden;
   display: grid;
@@ -171,10 +171,10 @@ header,
 }
 
 .modal-container {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: stretch;
-  gap: 0; /* No gap between modal and panel */
 }
 
 .modal-overlay {
@@ -184,10 +184,11 @@ header,
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
 }
 
 .modal-content {
@@ -195,17 +196,18 @@ header,
   padding: 24px;
   border-radius: 12px;
   color: white;
-  max-width: 400px;
-  width: 90%;
+  width: 400px;
   position: relative;
   text-align: center;
 
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
 
-  height: 500px; /* Static height */
+  height: 550px; /* Static height */
   box-sizing: border-box;
+
 }
 
 .close-x {
@@ -226,23 +228,25 @@ header,
 }
 
 .digimon-image-wrapper {
-  width: 200px;   /* or whatever size works best for your layout */
+  width: 200px;
   height: 200px;
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
-  background-color: #1a1a1a; /* optional for contrast */
+  background-color: #1a1a1a;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .digimon-image-wrapper img {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  display: block;
 }
 
-.evolution-toggle {
+.prior-evolution-toggle {
   position: absolute;
   left: -20px;
   top: 0;
@@ -257,10 +261,28 @@ header,
   z-index: 2;
 }
 
-.evolution-toggle:hover {
+.prior-evolution-toggle:hover {
   background-color: #3a3a3a;
 }
 
+.next-evolution-toggle {
+  position: absolute;
+  top: 0;
+  right: -20px;
+  height: 100%;
+  width: 30px;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 0 10px 10px 0px;
+  cursor: pointer;
+  font-size: 20px;
+  z-index: 2;
+}
+
+.next-evolution-toggle:hover {
+  background-color: #3a3a3a;
+}
 
 .evolution-list {
   margin-top: 20px;
@@ -280,15 +302,61 @@ header,
 
 /* Side panel for evolutions */
 .evolution-panel {
+  position: absolute;
+  top: 0;
+  height: 550px; /* Matches modal-content */
+  width: 300px;
   background-color: #1e1e1e;
   color: white;
   padding: 16px;
-  width: 300px;
-  border-radius: 12px 0 0 12px;
   overflow-y: auto;
-
-  height: 500px; /* Matches modal-content height */
   box-sizing: border-box;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  justify-content: center;
+  align-content: flex-start;
+  z-index: 2;
+}
+
+/* Left panel specific */
+.evolution-panel.left {
+  direction: rtl; /* Flip scroll direction */
+  left: -310px;
+  border-radius: 12px 0 0 12px;
+  text-align: left; /* Keep content left-aligned */
+}
+
+/* Right panel specific */
+.evolution-panel.right {
+  right: -310px;
+  border-radius: 0 12px 12px 0;
+  text-align: right; /* Keep content left-aligned */
+}
+
+
+.evolution-icon-button img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  background-color: white; /* ✅ Ensures white behind transparent images */
+  padding: 4px;
+  border: 3px solid #555; /* Dark gray border */
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.evolution-icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+
+.evolution-icon-button:hover img {
+  transform: scale(1.1);
 }
 
 .evolution-panel::-webkit-scrollbar {
