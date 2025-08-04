@@ -1,40 +1,61 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const PAGE_SIZE = 30;
+const TOTAL_DIGIMON = 200;
+const CHUNK_SIZE = 20;
 
-const DigiList = ({ searchTerm }) => {
+const DigiList = (props) => {
+  const { searchTerm } = props;
   const [loading, setLoading] = useState(true);
-  const [digimonList, setDigimonList] = useState([]); // minimal info list
-  const [loadedDigimons, setLoadedDigimons] = useState([]); // detailed digimons loaded incrementally
-  const [page, setPage] = useState(0);
-  const containerRef = useRef(null);
+  const [digimons, setDigimons] = useState([]);
   const navigate = useNavigate();
 
-  const isFetchingRef = useRef(false); // track ongoing fetch to prevent duplicates
+  // useEffect(() => {
+  //   const fetchDigimons = async () => {
+  //     const promises = [];
 
-  useEffect(() => {
-    const fetchFullList = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          "https://digi-api.com/api/v1/digimon?pageSize=2000"
-        );
-        const data = await res.json();
-        const minimalList = data.content.map((d) => ({
-          id: d.id,
-          name: d.name,
-          image: d.images?.[0]?.href || null,
-        }));
-        setDigimonList(minimalList);
-        setLoading(false);
-      } catch (e) {
-        console.error(e);
-        setLoading(false);
-      }
-    };
-    fetchFullList();
-  }, []);
+  //     for (let i = 1; i <= TOTAL_DIGIMON; i++) {
+  //       const cached = localStorage.getItem(`digimon-${i}`);
+
+  //       if (cached) {
+  //         const parsed = JSON.parse(cached);
+  //         promises.push(Promise.resolve(parsed));
+  //       } else {
+  //         promises.push(
+  //           fetch(`https://digi-api.com/api/v1/digimon/${i}`)
+  //             .then((res) => res.json())
+  //             .then((data) => {
+  //               const digimon = {
+  //                 id: data.id,
+  //                 name: data.name,
+  //                 image: data.images[0]?.href || null,
+  //               };
+  //               localStorage.setItem(`digimon-${i}`, JSON.stringify(digimon));
+  //               return digimon;
+  //             })
+  //             .catch(() => null)
+  //         );
+  //       }
+  //     }
+
+  //     const results = await Promise.all(promises);
+  //     setDigimons(results.filter(Boolean));
+  //     setLoading(false);
+  //   };
+
+  //   fetchDigimons();
+  // }, []);
+
+  const fetchFullList = async () => {
+    const res = await fetch("https://digi-api.com/api/v1/digimon?pageSize=300");
+    const data = await res.json();
+
+    return data.content.map((d) => ({
+      id: d.id,
+      name: d.name,
+      image: d.images?.[0]?.href || null,
+    }));
+  };
 
   const fetchDigimonDetails = async (id) => {
     const cached = localStorage.getItem(`digimon-${id}`);
@@ -54,62 +75,35 @@ const DigiList = ({ searchTerm }) => {
     return digimon;
   };
 
-  const loadMoreDigimons = async () => {
-    if (isFetchingRef.current) return; // already fetching, ignore
-    if (page * PAGE_SIZE >= digimonList.length) return; // no more to load
-
-    isFetchingRef.current = true;
-    setLoading(true);
-
-    const start = page * PAGE_SIZE;
-    const end = Math.min(start + PAGE_SIZE, digimonList.length);
-    const idsToLoad = digimonList.slice(start, end).map((d) => d.id);
-
-    try {
-      const promises = idsToLoad.map((id) => fetchDigimonDetails(id));
-      const newDigimons = (await Promise.all(promises)).filter(Boolean);
-
-      // Append only digimons that are not already loaded (avoid duplicates)
-      setLoadedDigimons((prev) => {
-        const existingIds = new Set(prev.map((d) => d.id));
-        const filteredNew = newDigimons.filter((d) => !existingIds.has(d.id));
-        return [...prev, ...filteredNew];
-      });
-
-      setPage((prev) => prev + 1);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-      isFetchingRef.current = false;
-    }
-  };
-
-  // Load first page after minimal list loads
   useEffect(() => {
-    if (digimonList.length > 0) {
-      loadMoreDigimons();
-    }
-  }, [digimonList]);
+    const fetchDigimons = async () => {
+      setLoading(true);
+      try {
+        const list = await fetchFullList();
 
-  const handleScroll = () => {
-    const el = containerRef.current;
-    if (!el) return;
+        const promises = list.map((d) => fetchDigimonDetails(d.id));
 
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
-      loadMoreDigimons();
-    }
-  };
+        const results = await Promise.all(promises);
 
-  if (loading && loadedDigimons.length === 0) {
+        setDigimons(results.filter(Boolean));
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDigimons();
+  }, []);
+
+  if (loading)
     return (
       <div className="loading-container">
         <p>Loading Digimon...</p>
       </div>
     );
-  }
 
-  const filteredDigimons = loadedDigimons
+  const filteredDigimons = digimons
     .filter(
       (d) =>
         d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -118,26 +112,22 @@ const DigiList = ({ searchTerm }) => {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div
-      className="digimon-grid"
-      onScroll={handleScroll}
-      ref={containerRef}
-      style={{ height: "600px", overflowY: "auto" }}
-    >
-      {filteredDigimons.map((digi) => (
-        <button
-          key={digi.id}
-          className="digimon-button"
-          onClick={() => navigate(`/digimon/${digi.id}`)}
-        >
-          {digi.image && (
-            <img src={digi.image} alt={digi.name} className="digimon-image" />
-          )}
-          <div className="digimon-popup">{digi.name}</div>
-        </button>
-      ))}
-      {loading && <p>Loading more Digimon...</p>}
-    </div>
+    <>
+      <div className="digimon-grid">
+        {filteredDigimons.map((digi) => (
+          <button
+            key={digi.id}
+            className="digimon-button"
+            onClick={() => navigate(`/digimon/${digi.id}`)}
+          >
+            {digi.image && (
+              <img src={digi.image} alt={digi.name} className="digimon-image" />
+            )}
+            <div className="digimon-popup">{digi.name}</div>
+          </button>
+        ))}
+      </div>
+    </>
   );
 };
 

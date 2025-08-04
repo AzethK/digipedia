@@ -38,7 +38,7 @@ header,
 
 /* Grid layout */
 .digimon-grid {
-  height: 100vh; 
+  height: 100%; 
   overflow-y: auto;
   overflow-x: hidden;
   display: grid;
@@ -86,10 +86,8 @@ header,
 /* Hover popup */
 .digimon-popup {
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background-color: #333;
+  background-color: rgba(51, 51, 51, 0.85); /* 0.85 = 85% opacity */
+
   color: #f5f5f5;
   padding: 6px 10px;
   border-radius: 6px;
@@ -101,7 +99,7 @@ header,
   z-index: 10;
   white-space: normal;    /* Allow wrapping */
   min-width: 110px;
-  max-width: 130px;
+  max-width: 135px;
   word-wrap: break-word;  /* Break long words if needed */
   text-align: center;     /* Center text nicely */
 }

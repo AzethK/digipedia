@@ -20,7 +20,7 @@ const App = () => {
         <Header />
         <DigiInput setSearchTerm={setSearchTerm} searchTerm={searchTerm} />
         <div className="digimon-grid-wrapper">
-          <DigiList2 searchTerm={searchTerm} />
+          <DigiList searchTerm={searchTerm} />
         </div>
         <Routes>
           {/* Default route */}
