@@ -18,7 +18,9 @@ const App = () => {
     <>
       <Router>
         <Header />
+        {/* DigiInput allows the user to type in the searchbar, it is defined on the app so it is accessible by DigiList */}
         <DigiInput setSearchTerm={setSearchTerm} searchTerm={searchTerm} />
+        {/* The core of the app, it is where the main data of the digimon is fetched and the grid is generated */}
         <div className="digimon-grid-wrapper">
           <DigiList searchTerm={searchTerm} />
         </div>

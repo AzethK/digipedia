@@ -6,21 +6,38 @@ const PAGE_SIZE = 30;
 
 const DigiList = ({ searchTerm }) => {
   const [loading, setLoading] = useState(true);
-  const [digimonList, setDigimonList] = useState([]); // minimal info list
-  const [loadedDigimons, setLoadedDigimons] = useState(() => {
-    const saved = localStorage.getItem("loadedDigimons");
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [digimonList, setDigimonList] = useState([]); // minimal list
+  const [loadedDigimons, setLoadedDigimons] = useState([]); //list of digimon visible in grid
   const [page, setPage] = useState(0);
+
   const containerRef = useRef(null);
+  const isFetchingRef = useRef(false);
   const navigate = useNavigate();
 
-  const isFetchingRef = useRef(false); // track ongoing fetch to prevent duplicates
+  useEffect(() => {
+    // Load all digimon-* entries from localStorage on first mount
+    const savedDigimons = [];
 
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith("digimon-")) {
+        try {
+          const digimon = JSON.parse(localStorage.getItem(key));
+          if (digimon && digimon.id && digimon.name) {
+            savedDigimons.push(digimon);
+          }
+        } catch (e) {
+          console.warn(`Error parsing ${key}:`, e);
+        }
+      }
+    }
+
+    setLoadedDigimons(savedDigimons);
+  }, []);
+
+  // Fetch full Digimon list (id, name, image)
   useEffect(() => {
     const fetchFullList = async () => {
-      setLoading(true);
       try {
         const res = await fetch(
           "https://digi-api.com/api/v1/digimon?pageSize=2000"
@@ -32,106 +49,38 @@ const DigiList = ({ searchTerm }) => {
           image: d.images?.[0]?.href || null,
         }));
         setDigimonList(minimalList);
-        setLoading(false);
       } catch (e) {
         console.error(e);
+      } finally {
         setLoading(false);
       }
     };
+    console.log(localStorage);
     fetchFullList();
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("loadedDigimons", JSON.stringify(loadedDigimons));
-  }, [loadedDigimons]);
-
-  useEffect(() => {
-    if (!searchTerm.trim()) return;
-
-    const handler = setTimeout(async () => {
-      const lowerSearch = searchTerm.toLowerCase();
-
-      // Find all matches
-      const matches = digimonNames.filter(
-        (d) =>
-          d.name.toLowerCase().includes(lowerSearch) ||
-          d.id.toString() === searchTerm.trim()
-      );
-
-      // Prepare arrays for cached and missing Digimon
-      const cachedDigimons = [];
-      const missingIds = [];
-
-      matches.forEach((m) => {
-        const cached = localStorage.getItem(`digimon-${m.id}`);
-        if (cached) {
-          cachedDigimons.push(JSON.parse(cached));
-        } else if (!loadedDigimons.some((d) => d.id === m.id)) {
-          missingIds.push(m.id);
-        }
-      });
-
-      if (missingIds.length === 0 && cachedDigimons.length === 0) return;
-
-      // Fetch missing Digimon from API
-      const fetchedDigimons = await Promise.all(
-        missingIds.map((id) =>
-          fetch(`https://digi-api.com/api/v1/digimon/${id}`)
-            .then((res) => res.json())
-            .then((data) => {
-              const digimon = {
-                id: data.id,
-                name: data.name,
-                image: data.images[0]?.href || null,
-              };
-              localStorage.setItem(
-                `digimon-${digimon.id}`,
-                JSON.stringify(digimon)
-              );
-              return digimon;
-            })
-            .catch(() => null)
-        )
-      );
-
-      // Combine cached and newly fetched Digimon, filter out any nulls
-      const newDigimons = [
-        ...cachedDigimons,
-        ...fetchedDigimons.filter(Boolean),
-      ];
-
-      // Add them to loadedDigimons, avoiding duplicates
-      setLoadedDigimons((prev) => {
-        const existingIds = new Set(prev.map((d) => d.id));
-        const filteredNew = newDigimons.filter((d) => !existingIds.has(d.id));
-        return [...prev, ...filteredNew];
-      });
-    }, 300);
-
-    return () => clearTimeout(handler);
-  }, [searchTerm, digimonNames, loadedDigimons]);
 
   const fetchDigimonDetails = async (id) => {
     const cached = localStorage.getItem(`digimon-${id}`);
     if (cached) return JSON.parse(cached);
 
-    const res = await fetch(`https://digi-api.com/api/v1/digimon/${id}`);
-    if (!res.ok) return null;
-    const data = await res.json();
-
-    const digimon = {
-      id: data.id,
-      name: data.name,
-      image: data.images?.[0]?.href || null,
-    };
-
-    localStorage.setItem(`digimon-${id}`, JSON.stringify(digimon));
-    return digimon;
+    try {
+      const res = await fetch(`https://digi-api.com/api/v1/digimon/${id}`);
+      const data = await res.json();
+      const digimon = {
+        id: data.id,
+        name: data.name,
+        image: data.images?.[0]?.href || null,
+      };
+      localStorage.setItem(`digimon-${id}`, JSON.stringify(digimon));
+      return digimon;
+    } catch {
+      return null;
+    }
   };
 
+  // Load more for infinite scroll
   const loadMoreDigimons = async () => {
-    if (isFetchingRef.current) return; // already fetching, ignore
-    if (page * PAGE_SIZE >= digimonList.length) return; // no more to load
+    if (isFetchingRef.current || page * PAGE_SIZE >= digimonList.length) return;
 
     isFetchingRef.current = true;
     setLoading(true);
@@ -140,49 +89,70 @@ const DigiList = ({ searchTerm }) => {
     const end = Math.min(start + PAGE_SIZE, digimonList.length);
     const idsToLoad = digimonList.slice(start, end).map((d) => d.id);
 
-    try {
-      const promises = idsToLoad.map((id) => fetchDigimonDetails(id));
-      const newDigimons = (await Promise.all(promises)).filter(Boolean);
+    const newDigimons = (
+      await Promise.all(idsToLoad.map(fetchDigimonDetails))
+    ).filter(Boolean);
 
-      // Append only digimons that are not already loaded (avoid duplicates)
-      setLoadedDigimons((prev) => {
-        const existingIds = new Set(prev.map((d) => d.id));
-        const filteredNew = newDigimons.filter((d) => !existingIds.has(d.id));
-        return [...prev, ...filteredNew];
-      });
+    setLoadedDigimons((prev) => {
+      const existingIds = new Set(prev.map((d) => d.id));
+      return [...prev, ...newDigimons.filter((d) => !existingIds.has(d.id))];
+    });
 
-      setPage((prev) => prev + 1);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-      isFetchingRef.current = false;
-    }
+    setPage((prev) => prev + 1);
+    isFetchingRef.current = false;
+    setLoading(false);
   };
 
-  // Load first page after minimal list loads
+  // Initial load
   useEffect(() => {
     if (digimonList.length > 0) {
       loadMoreDigimons();
     }
   }, [digimonList]);
 
+  // Scroll listener
   const handleScroll = () => {
     const el = containerRef.current;
-    if (!el) return;
-
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
+    if (el && el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
       loadMoreDigimons();
     }
   };
 
-  if (loading && loadedDigimons.length === 0) {
-    return (
-      <div className="loading-container">
-        <p>Loading Digimon...</p>
-      </div>
-    );
-  }
+  // SearchTerm effect
+  useEffect(() => {
+    if (!searchTerm.trim()) return;
+
+    const handler = setTimeout(async () => {
+      const lowerSearch = searchTerm.toLowerCase();
+      const matches = digimonNames.filter(
+        (d) =>
+          d.name.toLowerCase().includes(lowerSearch) ||
+          d.id.toString() === searchTerm.trim()
+      );
+
+      const cached = [];
+      const toFetch = [];
+
+      matches.forEach((m) => {
+        const stored = localStorage.getItem(`digimon-${m.id}`);
+        if (stored) {
+          cached.push(JSON.parse(stored));
+        } else if (!loadedDigimons.some((d) => d.id === m.id)) {
+          toFetch.push(m.id);
+        }
+      });
+
+      const fetched = await Promise.all(toFetch.map(fetchDigimonDetails));
+      const newDigimons = [...cached, ...fetched.filter(Boolean)];
+
+      setLoadedDigimons((prev) => {
+        const existingIds = new Set(prev.map((d) => d.id));
+        return [...prev, ...newDigimons.filter((d) => !existingIds.has(d.id))];
+      });
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   const filteredDigimons = loadedDigimons
     .filter(

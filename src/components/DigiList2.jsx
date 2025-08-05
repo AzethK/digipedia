@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 const TOTAL_DIGIMON = 200;
 const CHUNK_SIZE = 20;
 
+//this is all for testing purposes only
+
 const DigiList = (props) => {
   const { searchTerm } = props;
   const [loading, setLoading] = useState(true);
