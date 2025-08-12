@@ -25,6 +25,7 @@ input {
   font-family: 'Press Start 2P', monospace, sans-serif;
 }
 
+
 input::placeholder {
   font-size: 14px;
 }
@@ -57,7 +58,12 @@ header,
 .digi-input-container {
   text-align: center;
   margin: 16px 0;
+  display: flex;           /* ✅ make it flex */
+  flex-direction: column;  /* ✅ stack vertically */
+  align-items: center;     /* ✅ center items horizontally */
+  gap: 12px;                /* ✅ now gap works */
 }
+
 
 .digi-input {
   padding: 10px 16px;
@@ -73,6 +79,65 @@ header,
   color: #aaa;
 }
 
+/* ===============================
+   Filter buttons
+================================= */
+
+.filter-toggle-btn {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #888;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.filter-toggle-btn:hover {
+  background-color: #2a2a2a;
+  border-color: #aaa;
+}
+
+.filters-container {
+  
+  display: flex;
+  gap: 12px; /* ✅ space between dropdowns */
+  justify-content: center;
+}
+
+.filter-dropdown {
+  font-family: 'Press Start 2P', monospace, sans-serif;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #888;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.filter-dropdown:hover {
+  background-color: #2a2a2a;
+  border-color: #aaa;
+}
+
+.apply-filters-btn {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #888;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.apply-filters-btn:hover {
+  background-color: #2a2a2a;
+  border-color: #aaa;
+}
 
 /* ===============================
    Digimon Grid
