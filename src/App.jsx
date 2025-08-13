@@ -10,7 +10,10 @@ import Header from "./components/Header";
 import DigiList from "./components/DigiList";
 import DigiInput from "./components/DigiInput";
 import DigiDetail from "./components/DigiDetail";
+
+// Used only for testing purposes
 import DigiListTest from "./components/DigiListTest";
+import Footer from "./components/Footer";
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,6 +40,7 @@ const App = () => {
             selectedLevel={selectedLevel}
           />
         </div>
+        <Footer />
         <Routes>
           {/* Default route */}
           <Route path="/" element={null} />

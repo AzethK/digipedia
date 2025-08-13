@@ -43,6 +43,7 @@ const DigiInput = (props) => {
     if (grid) grid.scrollTop = 0;
   }, [searchTerm]);
 
+  //When the Apply button is pressed this function sets the filters using the values in the temporary variables
   const handleApplyFilters = () => {
     setSelectedAttribute(tempAttribute);
     setSelectedLevel(tempLevel);
@@ -51,6 +52,7 @@ const DigiInput = (props) => {
     console.log("Apply filters clicked:", { tempAttribute, tempLevel });
   };
 
+  //When the Clear button is pressed all filters and temporary variables are reset
   function handleClearFilters() {
     setSelectedLevel("");
     setSelectedAttribute("");

@@ -32,7 +32,6 @@ const DigimonModal = () => {
         try {
           const res = await fetch(`https://digi-api.com/api/v1/digimon/${id}`);
           if (!res.ok) {
-            // If response status is not OK (like 404), throw an error
             navigate("/");
             throw new Error("Digimon not found");
           }
@@ -52,7 +51,7 @@ const DigimonModal = () => {
             nextEvolutions: data.nextEvolutions || [],
           };
 
-          // Merge with existing partial data (if any)
+          // Merge with existing partial data if any
           const merged = { ...digimon, ...fullDigimon };
 
           // Save updated data
