@@ -132,10 +132,15 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
   //Scroll listener
   const handleScroll = () => {
     const scrollListener = containerRef.current;
+    if (!scrollListener) return;
+
+    // Determine threshold based on screen width
+    const isMobile = window.innerWidth <= 768; //this is the breakpoint on the CSS
+    const threshold = isMobile ? 0.6 : 0.9;
+
     if (
-      scrollListener &&
       scrollListener.scrollTop + scrollListener.clientHeight >=
-        scrollListener.scrollHeight - 10
+      scrollListener.scrollHeight * threshold
     ) {
       loadMoreDigimons();
     }

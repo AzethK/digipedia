@@ -107,33 +107,41 @@ const DigimonModal = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <h3>Next Evolutions</h3>
-            {digimon.nextEvolutions?.length > 0 ? (
-              digimon.nextEvolutions.map((evo) => (
-                <button
-                  key={evo.id}
-                  onClick={() => navigate(`/digimon/${evo.id}`)}
-                  className="evolution-icon-button"
-                  title={evo.name}
-                >
-                  <img src={evo.image} alt={evo.name} />
-                </button>
-              ))
-            ) : (
-              <p style={{ color: "#aaa" }}>No next evolutions</p>
-            )}
+            <ul>
+              {digimon.nextEvolutions?.length > 0 ? (
+                digimon.nextEvolutions.map((evo) => (
+                  <button
+                    key={evo.id}
+                    onClick={() => navigate(`/digimon/${evo.id}`)}
+                    className="evolution-icon-button"
+                    title={evo.name}
+                  >
+                    <img src={evo.image} alt={evo.name} />
+                  </button>
+                ))
+              ) : (
+                <p style={{ color: "#aaa" }}>No next evolutions</p>
+              )}
+            </ul>
           </div>
         )}
 
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <button
             className="prior-evolution-toggle"
-            onClick={() => setShowPriorEvolutions(!showPriorEvolutions)}
+            onClick={() => {
+              if (window.innerWidth <= 768) setShowNextEvolutions(false);
+              setShowPriorEvolutions(!showPriorEvolutions);
+            }}
           >
             {showPriorEvolutions ? "\u25B6" : "\u25C0"}
           </button>
           <button
             className="next-evolution-toggle"
-            onClick={() => setShowNextEvolutions((prev) => !prev)}
+            onClick={() => {
+              if (window.innerWidth <= 768) setShowPriorEvolutions(false);
+              setShowNextEvolutions((prev) => !prev);
+            }}
           >
             {showNextEvolutions ? "\u25C0" : "\u25B6"}
           </button>
