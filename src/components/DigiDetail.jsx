@@ -88,7 +88,11 @@ const DigimonModal = () => {
                 digimon.priorEvolutions.map((evo) => (
                   <button
                     key={evo.id}
-                    onClick={() => navigate(`/digimon/${evo.id}`)}
+                    onClick={() => {
+                      setShowNextEvolutions(false);
+                      setShowPriorEvolutions(false);
+                      navigate(`/digimon/${evo.id}`);
+                    }}
                     className="evolution-icon-button"
                     title={evo.name}
                   >
@@ -112,7 +116,11 @@ const DigimonModal = () => {
                 digimon.nextEvolutions.map((evo) => (
                   <button
                     key={evo.id}
-                    onClick={() => navigate(`/digimon/${evo.id}`)}
+                    onClick={() => {
+                      setShowNextEvolutions(false);
+                      setShowPriorEvolutions(false);
+                      navigate(`/digimon/${evo.id}`);
+                    }}
                     className="evolution-icon-button"
                     title={evo.name}
                   >
@@ -129,21 +137,27 @@ const DigimonModal = () => {
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <button
             className="prior-evolution-toggle"
+            style={{
+              backgroundColor: showPriorEvolutions ? "#686565ff" : "", // darker when true
+            }}
             onClick={() => {
               if (window.innerWidth <= 768) setShowNextEvolutions(false);
               setShowPriorEvolutions(!showPriorEvolutions);
             }}
           >
-            {showPriorEvolutions ? "\u25B6" : "\u25C0"}
+            Prior Evolutions
           </button>
           <button
             className="next-evolution-toggle"
+            style={{
+              backgroundColor: showNextEvolutions ? "#686565ff" : "", // darker when true
+            }}
             onClick={() => {
               if (window.innerWidth <= 768) setShowPriorEvolutions(false);
               setShowNextEvolutions((prev) => !prev);
             }}
           >
-            {showNextEvolutions ? "\u25C0" : "\u25B6"}
+            Next Evolutions
           </button>
           <span className="close-x" onClick={closeModal}>
             ×

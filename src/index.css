@@ -376,6 +376,8 @@ header,
 
 .prior-evolution-toggle,
 .next-evolution-toggle {
+  writing-mode: vertical-lr;
+  text-orientation: upright;
   position: absolute;
   top: 0;
   height: 100%;
@@ -498,7 +500,7 @@ header,
 
   .digimon-grid-wrapper {
     max-width: 100%;
-    height: calc(100vh - 250px);
+    height: calc(100vh - 300px); /*This is to let the user actually see the everything at once */
     margin: 16px auto;
     padding: 8px;
     border-radius: 12px;
