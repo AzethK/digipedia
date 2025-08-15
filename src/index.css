@@ -500,7 +500,7 @@ header,
 
   .digimon-grid-wrapper {
     max-width: 100%;
-    height: calc(100vh - 300px); /*This is to let the user actually see the everything at once */
+    height: calc(100vh - 350px); /*This is to let the user actually see the everything at once */
     margin: 16px auto;
     padding: 8px;
     border-radius: 12px;
@@ -554,8 +554,6 @@ header,
     color: white;
     cursor: pointer;
   }
-
-  .body{overflow:scroll}
 }
 
    
