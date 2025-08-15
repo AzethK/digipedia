@@ -138,7 +138,7 @@ const DigimonModal = () => {
           <button
             className="prior-evolution-toggle"
             style={{
-              backgroundColor: showPriorEvolutions ? "#686565ff" : "", // darker when true
+              backgroundColor: showPriorEvolutions ? "#686565ff" : "",
             }}
             onClick={() => {
               if (window.innerWidth <= 768) setShowNextEvolutions(false);
@@ -150,7 +150,7 @@ const DigimonModal = () => {
           <button
             className="next-evolution-toggle"
             style={{
-              backgroundColor: showNextEvolutions ? "#686565ff" : "", // darker when true
+              backgroundColor: showNextEvolutions ? "#686565ff" : "",
             }}
             onClick={() => {
               if (window.innerWidth <= 768) setShowPriorEvolutions(false);

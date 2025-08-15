@@ -13,7 +13,7 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
   const isFetchingRef = useRef(false);
   const navigate = useNavigate();
 
-  // ---- Fetch minimal list based on filters ----
+  //Fetch minimal list based on filters
   const fetchFilteredList = async (level, attribute) => {
     // If both filters are applied, try API combined query first
     if (level && attribute) {
@@ -38,7 +38,7 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
         );
       }
 
-      // Fallback: fetch separately and intersect
+      //Fallback: fetch separately and intersect
       const [levelList, attrList] = await Promise.all([
         fetchFilteredList(level, null),
         fetchFilteredList(null, attribute),
@@ -47,7 +47,7 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
       return levelList.filter((d) => attrIds.has(d.id));
     }
 
-    // Single filter or no filter
+    //Single filter or no filter
     const params = new URLSearchParams();
     if (attribute) params.append("attribute", attribute);
     if (level) params.append("level", level);
@@ -63,7 +63,7 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
     }));
   };
 
-  // ---- Fetch details for a single Digimon ----
+  //Fetch details for a single Digimon
   const fetchDigimonDetails = async (id) => {
     const cached = localStorage.getItem(`digimon-${id}`);
     if (cached) return JSON.parse(cached);
@@ -83,7 +83,7 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
     }
   };
 
-  // ---- Load more Digimon for infinite scroll ----
+  //Load more Digimon for infinite scroll
   const loadMoreDigimons = async () => {
     if (isFetchingRef.current || page * PAGE_SIZE >= digimonList.length) return;
 
@@ -108,7 +108,7 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
     setLoading(false);
   };
 
-  // ---- Reset list when filters change ----
+  //Reset list when filters change
   useEffect(() => {
     const loadFilteredList = async () => {
       setLoading(true);
@@ -128,14 +128,14 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
     loadFilteredList();
   }, [selectedLevel, selectedAttribute]);
 
-  // ---- Load more when minimal list changes ----
+  //Load more when minimal list changes
   useEffect(() => {
     if (digimonList.length > 0) {
       loadMoreDigimons();
     }
   }, [digimonList]);
 
-  // ---- Scroll listener ----
+  //Scroll listener
   const handleScroll = () => {
     const el = containerRef.current;
     if (el && el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
@@ -143,7 +143,7 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
     }
   };
 
-  // ---- Search effect ----
+  //Search effect
   useEffect(() => {
     if (!searchTerm.trim()) return;
 
@@ -179,7 +179,7 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
     return () => clearTimeout(handler);
   }, [searchTerm, digimonList]);
 
-  // ---- Filtered list for rendering ----
+  //Filtered list for rendering
   const filteredDigimons = loadedDigimons
     .filter(
       (d) =>
