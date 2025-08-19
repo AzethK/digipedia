@@ -500,7 +500,7 @@ header,
 
   .digimon-grid-wrapper {
     max-width: 100%;
-    height: calc(100vh - 350px); /*This is to let the user actually see the everything at once */
+    height: calc(100vh - 350px); /*This is to let the user actually see everything at once */
     margin: 16px auto;
     padding: 8px;
     border-radius: 12px;
@@ -541,7 +541,6 @@ header,
     text-align: center;
   }
 
-  /* Back button inside panel */
   .evolution-panel::before {
     position: absolute;
     top: 10px;

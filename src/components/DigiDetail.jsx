@@ -8,7 +8,7 @@ const DigimonModal = () => {
   const [showPriorEvolutions, setShowPriorEvolutions] = useState(false);
   const [showNextEvolutions, setShowNextEvolutions] = useState(false);
 
-  //checks if digimon id is in localStorage, if it is the nit checks if it has all the details, if it doesn't it fetches them and saves them to localStorage
+  //checks if digimon id is in localStorage, if it is then it checks if it has all the details, if it doesn't it fetches them and saves them to localStorage
   useEffect(() => {
     const loadDigimon = async () => {
       const key = `digimon-${id}`;
