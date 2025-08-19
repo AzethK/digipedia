@@ -11,8 +11,6 @@ import DigiList from "./components/DigiList";
 import DigiInput from "./components/DigiInput";
 import DigiDetail from "./components/DigiDetail";
 
-// Used only for testing purposes
-import DigiListTest from "./components/DigiListTest";
 import Footer from "./components/Footer";
 
 const App = () => {
