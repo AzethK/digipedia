@@ -30,6 +30,8 @@ const DigiList = ({ searchTerm, selectedLevel, selectedAttribute }) => {
             name: d.name,
             image: d.images?.[0]?.href || null,
           }));
+        } else {
+          return [];
         }
       } catch (err) {
         console.warn("Error fetching digimon", err);
