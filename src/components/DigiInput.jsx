@@ -49,7 +49,6 @@ const DigiInput = (props) => {
     setSelectedLevel(tempLevel);
 
     setShowFilters(false);
-    console.log("Apply filters clicked:", { tempAttribute, tempLevel });
   };
 
   //When the Clear button is pressed all filters and temporary variables are reset

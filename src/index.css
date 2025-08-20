@@ -536,7 +536,7 @@ header,
     width: 100% !important;
     height: 100%;
     border-radius: 12px;
-    z-index: 999; /* Above modal content */
+    z-index: 999;
     direction: ltr;
     text-align: center;
   }
