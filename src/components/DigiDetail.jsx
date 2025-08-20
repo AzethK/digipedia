@@ -94,9 +94,9 @@ const DigimonModal = () => {
                       navigate(`/digimon/${evo.id}`);
                     }}
                     className="evolution-icon-button"
-                    title={evo.name}
+                    title={evo.digimon}
                   >
-                    <img src={evo.image} alt={evo.name} />
+                    <img src={evo.image} alt={evo.digimon} />
                   </button>
                 ))
               ) : (
@@ -122,9 +122,9 @@ const DigimonModal = () => {
                       navigate(`/digimon/${evo.id}`);
                     }}
                     className="evolution-icon-button"
-                    title={evo.name}
+                    title={evo.digimon}
                   >
-                    <img src={evo.image} alt={evo.name} />
+                    <img src={evo.image} alt={evo.digimon} />
                   </button>
                 ))
               ) : (
@@ -203,8 +203,8 @@ const DigimonModal = () => {
                 <img
                   key={field.id}
                   src={field.image}
-                  alt={field.name}
-                  title={field.name}
+                  alt={field.field}
+                  title={field.field}
                   style={{
                     width: "40px",
                     height: "40px",
