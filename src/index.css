@@ -165,6 +165,7 @@ header,
   position: relative;
   box-sizing: border-box;
   scroll-padding-top: 40px;
+  align-content: start;
 }
 
 .digimon-grid::-webkit-scrollbar {
